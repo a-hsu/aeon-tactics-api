@@ -2,7 +2,7 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM --platform=linux/amd64/v8 node:16-alpine  AS development
+FROM --platform=linux/amd64 node:16-alpine AS development
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -26,7 +26,7 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM --platform=linux/amd64/v8 node:16-alpine AS build
+FROM --platform=linux/amd64 node:16-alpine AS build
 
 WORKDIR /usr/src/app
 
@@ -37,6 +37,14 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 
 COPY --chown=node:node . .
 
+# Set a build-time variable for the database URL
+ARG DATABASE_URL
+
+# Set the environment variable with the build-time variable value
+ENV DATABASE_URL=$DATABASE_URL
+
+# Build prisma
+RUN npm run build-prisma
 # Run the build command which creates the production bundle
 RUN npm run build
 
@@ -52,7 +60,7 @@ USER node
 # PRODUCTION
 ###################
 
-FROM --platform=linux/amd64/v8 node:16-alpine AS production
+FROM --platform=linux/amd64 node:16-alpine AS production
 
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
