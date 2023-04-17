@@ -16,9 +16,28 @@ export class UsersController {
 
   @Get('me')
   async getUser() {
-    console.log('imhere');
     return await this.userService.user({
       email: 'a@mail.com',
     });
   }
+
+  @Post('new')
+  async createUser() {
+    try {
+      const newUser = await this.userService.createUser({
+        email: 'b@mail.com',
+        name: 'barry allen',
+      });
+      return newUser;
+    } catch (error) {}
+  }
+
+  // @Get()
+  // findAll() {}
+
+  // @Put('/:id')
+  // update() {}
+
+  // @Delete('/:id')
+  // delete() {}
 }

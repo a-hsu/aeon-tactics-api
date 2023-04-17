@@ -6,11 +6,23 @@ import { PrismaService } from '../prisma.service';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
+  async createUser(userInput: Prisma.UserCreateInput) {
+    try {
+      const newUser = this.prisma.user.create({
+        data: userInput,
+      });
+      return newUser;
+    } catch (error) {}
+  }
   async user(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ): Promise<User | null> {
-    return this.prisma.user.findUnique({
-      where: userWhereUniqueInput,
-    });
+    try {
+      return this.prisma.user.findUnique({
+        where: userWhereUniqueInput,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
