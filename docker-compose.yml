@@ -1,0 +1,22 @@
+version: '2'
+services:
+  aeon-tactics-api:
+    container_name: aeon-tactics-api
+    image: aeon-tactics-api
+    restart: always
+    command: 'node dist/main.js'
+    build: .
+    ports:
+      - '8080:8080'
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+    volumes:
+      - ./db:/data/db
+    ports:
+      - '27018:27017'

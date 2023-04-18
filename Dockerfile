@@ -4,6 +4,8 @@
 
 FROM --platform=linux/amd64 node:16-alpine AS development
 
+COPY .env /app/
+
 # Create app directory
 WORKDIR /usr/src/app
 
