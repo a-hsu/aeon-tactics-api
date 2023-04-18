@@ -8,12 +8,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+model User {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  email         String       @unique
+  emailVerified Boolean?
+  username      String       @unique
+  password      String
+  userProfile   UserProfile?
+  player        Player?
+  scopeIDs      String[]     @db.ObjectId
+  scopes        Scope[]      @relation(fields: [scopeIDs], references: [id])
+  posts         Post[]
+  lastLogin     DateTime?
+  createdAt     DateTime?    @default(now())
+  updatedAt     DateTime?
 }
 
-model User {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  email String @unique
-  name  String
+model Scope {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String   @unique
+  userIDs   String[] @db.ObjectId
+  users     User[]   @relation(fields: [userIDs], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+}
+
+model UserProfile {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique @db.ObjectId
+}
+
+model Player {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  playerName String
+  user       User   @relation(fields: [userId], references: [id])
+  userId     String @unique @db.ObjectId
+  level      Int    @default(1)
+  experience Int    @default(0)
+  gold       Int    @default(0)
+}
+
+model Match {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  game      Game?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  result    Int
+}
+
+model Game {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  match   Match  @relation(fields: [matchID], references: [id])
+  matchID String @unique @db.ObjectId
+}
+
+model Post {
+  id       String   @id @default(auto()) @map("_id") @db.ObjectId
+  author   User     @relation(fields: [authorID], references: [id])
+  authorID String   @db.ObjectId
+  tags     Tag[]    @relation(fields: [tagIDs], references: [id])
+  tagIDs   String[] @db.ObjectId
+  title    String
+  subtitle String
+  content  String
+}
+
+model Tag {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  postIDs String[] @db.ObjectId
+  posts   Post[]   @relation(fields: [postIDs], references: [id])
 }
