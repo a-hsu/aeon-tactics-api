@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../../prisma.service';
 
 @Injectable()
 export class UsersService {
@@ -14,7 +14,8 @@ export class UsersService {
       return newUser;
     } catch (error) {}
   }
-  async user(
+
+  async findOne(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput,
   ): Promise<User | null> {
     try {
