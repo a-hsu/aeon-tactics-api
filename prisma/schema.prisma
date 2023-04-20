@@ -64,14 +64,17 @@ model Game {
 }
 
 model Post {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  author   User     @relation(fields: [authorID], references: [id])
-  authorID String   @db.ObjectId
-  tags     Tag[]    @relation(fields: [tagIDs], references: [id])
-  tagIDs   String[] @db.ObjectId
-  title    String
-  subtitle String
-  content  String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  author    User     @relation(fields: [authorID], references: [id])
+  authorID  String   @db.ObjectId
+  category  String
+  tags      Tag[]    @relation(fields: [tagIDs], references: [id])
+  tagIDs    String[] @db.ObjectId
+  title     String   @unique @db.ObjectId
+  subtitle  String
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime?
 }
 
 model Tag {

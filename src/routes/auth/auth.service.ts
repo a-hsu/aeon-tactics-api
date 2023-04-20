@@ -1,39 +1,37 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
-// todo: install jwt
-// import { JwtService } from '@nestjs/jwt';
+
+const saltOrRounds = 10;
 
 @Injectable()
 export class AuthService {
   constructor(
-    // private jwtService: JwtService,
+    private jwtService: JwtService,
     private readonly usersService: UsersService,
   ) {}
 
   async signIn(username: string, pass: string) {
     try {
-      console.log('auth service sign in');
       if (!username) {
         throw new Error('Missing Credentials');
       }
       const userWhereUniqueInput: Prisma.UserWhereUniqueInput = { username };
       const user = await this.usersService.findOne(userWhereUniqueInput);
 
-      // todo: hash password first using bcrypt
-      if (user?.password !== pass) {
+      const isMatch = await bcrypt.compare(pass, user?.password);
+
+      if (!isMatch) {
         throw new UnauthorizedException();
       }
-      // todo: create an access token through jwt
-      // const payload = { username: user.username, sub: user.id };
-      // return {
-      //   access_token: await this.jwtService.signAsync(payload)
-      // }
-      const { password, ...result } = user;
-
-      return result;
+      const payload = { username: user.username, sub: user.id };
+      return {
+        access_token: await this.jwtService.signAsync(payload),
+      };
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 }

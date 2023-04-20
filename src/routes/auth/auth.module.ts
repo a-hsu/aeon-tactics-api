@@ -4,19 +4,18 @@ import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-// todo
-// import { JwtModule } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 
-// const secret = process.env.JWT_SECRET;
+const secret = process.env.JWT_SECRET;
 
 @Module({
   imports: [
     UsersModule,
-    // JwtModule.register({
-    //   global: true,
-    //   secret,
-    //   signOptions: {expiresIn:'60s'}
-    // })
+    JwtModule.register({
+      global: true,
+      secret,
+      signOptions: { expiresIn: '60s' },
+    }),
   ],
   providers: [AuthService, UsersService, PrismaService],
   controllers: [AuthController],
